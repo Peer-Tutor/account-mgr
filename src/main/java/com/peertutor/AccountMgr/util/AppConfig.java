@@ -11,7 +11,7 @@ public class AppConfig {
 
     private Map<String, String> bookmarkMgr;
     private Map<String, String> studentMgr;
-    private Map<String, String> tutorCalendarMgr;
+    private Map<String, String> tutorMgr;
     private Map<String, String> notificationMgr;
     private Map<String, String> reviewMgr;
     private Map<String, String> recommendationMgr;
@@ -34,12 +34,12 @@ public class AppConfig {
         this.studentMgr = studentMgr;
     }
 
-    public Map<String, String> getTutorCalendarMgr() {
-        return tutorCalendarMgr;
+    public Map<String, String> getTutorMgr() {
+        return tutorMgr;
     }
 
-    public void setTutorCalendarMgr(Map<String, String> tutorCalendarMgr) {
-        this.tutorCalendarMgr = tutorCalendarMgr;
+    public void setTutorMgr(Map<String, String> tutorMgr) {
+        this.tutorMgr = tutorMgr;
     }
 
     public Map<String, String> getNotificationMgr() {
@@ -87,7 +87,7 @@ public class AppConfig {
         return "AppConfig{" +
                 "bookmarkMgr=" + bookmarkMgr +
                 ", studentMgr=" + studentMgr +
-                ", tutorCalendarMgr=" + tutorCalendarMgr +
+                ", tutorMgr=" + tutorMgr +
                 ", notificationMgr=" + notificationMgr +
                 ", reviewMgr=" + reviewMgr +
                 ", recommendationMgr=" + recommendationMgr +
