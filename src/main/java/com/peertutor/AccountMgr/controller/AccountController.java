@@ -1,32 +1,37 @@
 package com.peertutor.AccountMgr.controller;
 
-import com.peertutor.AccountMgr.model.Account;
-import com.peertutor.AccountMgr.repository.AccountRepository;
+import com.peertutor.AccountMgr.controller.errors.BadRequestAlertException;
+import com.peertutor.AccountMgr.model.enumeration.UserType;
+import com.peertutor.AccountMgr.model.viewmodel.request.AccountRegistrationReq;
+import com.peertutor.AccountMgr.service.AccountService;
+import com.peertutor.AccountMgr.service.dto.AccountDTO;
 import com.peertutor.AccountMgr.util.AppConfig;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.SpringVersion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping(path="/account-mgr")
+@RequiredArgsConstructor
 public class AccountController {
     @Autowired
     AppConfig appConfig;
+
     @Autowired
-    private AccountRepository accountRepository;// = new CustomerRepository();
-    @GetMapping(path="/")
-    public @ResponseBody String defaultResponse(){
+    private AccountService accountService;
 
-        System.out.println("appConfig="+ appConfig.toString());
-        System.out.println("ver"+ SpringVersion.getVersion());
-        return "Hello world Spring Ver = " + SpringVersion.getVersion() + "From Account mgr";
+    private static final String ENTITY_NAME = "AccountController";
+    private String applicationName = "AccountMgr";
 
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
     }
+
     @GetMapping(path="/public-api")
     public @ResponseBody String callPublicApi() {
         String endpoint = "https://api.publicapis.org/entries"; //url+":"+port;
@@ -51,36 +56,22 @@ public class AccountController {
 
         return response.toString();
     }
-    @GetMapping(path="/health")
-    public @ResponseBody String healthCheck(){
-        return "Ok";
+
+    @PostMapping(path = "/account")
+    public @ResponseBody ResponseEntity<AccountDTO> addNewUser(@RequestBody @Valid AccountRegistrationReq req) {
+
+        AccountDTO customer = new AccountDTO();
+
+        try {
+            UserType userType = UserType.valueOf(req.usertype);
+            customer.setName(req.name);
+            customer.setPassword(req.password);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestAlertException("invalid user type", ENTITY_NAME, "invalidUserType");
+        }
+
+        AccountDTO account = accountService.saveAccount(customer);
+
+        return ResponseEntity.ok().body(account);
     }
-
-    @PostMapping(path = "/add")
-    public @ResponseBody String addNewCustomer(@RequestBody Map<String, String> customerDTO) {
-
-        // <validation logic here>
-        // todo: generalise validation logic
-
-        // <retrieve data from request body>
-        System.out.println("customerMap= " +customerDTO);
-        String firstName = customerDTO.get("firstName");
-        String lastName = customerDTO.get("lastName");
-        // create DTO
-        Account customer = new Account(firstName, lastName);
-
-        // dao layer: save object to db
-        accountRepository.save(customer);
-
-        // todo: better logging
-        // todo: generalise response message
-        return "Saved";
-    }
-    @GetMapping(path="/all")
-    public @ResponseBody Iterable<Account> getAllCustomers (){
-
-        return accountRepository.findAll();
-    }
-
-
 }
