@@ -8,7 +8,8 @@ import java.util.List;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
-    List<Account> findByName(String name);
+    Account findByName(String name);
+
     List<Account> findByNameIn(List<String> name);
 }
 

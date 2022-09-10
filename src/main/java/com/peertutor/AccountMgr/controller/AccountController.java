@@ -3,11 +3,13 @@ package com.peertutor.AccountMgr.controller;
 import com.peertutor.AccountMgr.controller.errors.BadRequestAlertException;
 import com.peertutor.AccountMgr.model.enumeration.UserType;
 import com.peertutor.AccountMgr.model.viewmodel.request.AccountRegistrationReq;
+import com.peertutor.AccountMgr.model.viewmodel.request.AuthenticationReq;
 import com.peertutor.AccountMgr.service.AccountService;
 import com.peertutor.AccountMgr.service.dto.AccountDTO;
 import com.peertutor.AccountMgr.util.AppConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -16,23 +18,17 @@ import org.springframework.web.client.RestTemplate;
 import javax.validation.Valid;
 
 @Controller
-@RequestMapping(path="/account-mgr")
+@RequestMapping(path = "/account-mgr")
 @RequiredArgsConstructor
 public class AccountController {
+    private static final String ENTITY_NAME = "AccountController";
     @Autowired
     AppConfig appConfig;
-
     @Autowired
     private AccountService accountService;
-
-    private static final String ENTITY_NAME = "AccountController";
     private String applicationName = "AccountMgr";
 
-    public AccountController(AccountService accountService) {
-        this.accountService = accountService;
-    }
-
-    @GetMapping(path="/public-api")
+    @GetMapping(path = "/public-api")
     public @ResponseBody String callPublicApi() {
         String endpoint = "https://api.publicapis.org/entries"; //url+":"+port;
         System.out.println("endpoint" + endpoint);
@@ -43,12 +39,12 @@ public class AccountController {
         return response.toString();
     }
 
-    @GetMapping(path="/call-app-student-mgr")
+    @GetMapping(path = "/call-app-student-mgr")
     public @ResponseBody String callAppTwo() {
         String url = appConfig.getStudentMgr().get("url");
         String port = appConfig.getStudentMgr().get("port");
 
-        String endpoint = url+":"+port + "/";
+        String endpoint = url + ":" + port + "/";
         System.out.println("endpoint" + endpoint);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -58,20 +54,54 @@ public class AccountController {
     }
 
     @PostMapping(path = "/account")
-    public @ResponseBody ResponseEntity<AccountDTO> addNewUser(@RequestBody @Valid AccountRegistrationReq req) {
+    public @ResponseBody ResponseEntity<AccountDTO> userRegistration(@RequestBody @Valid AccountRegistrationReq req) {
 
-        AccountDTO customer = new AccountDTO();
+        AccountDTO newUser = new AccountDTO();
+        AccountDTO savedUser;
 
         try {
             UserType userType = UserType.valueOf(req.usertype);
-            customer.setName(req.name);
-            customer.setPassword(req.password);
+            newUser.setName(req.name);
+            newUser.setPassword(req.password);
+            newUser.setUserType(userType);
         } catch (IllegalArgumentException e) {
             throw new BadRequestAlertException("invalid user type", ENTITY_NAME, "invalidUserType");
+        } finally {
+            savedUser = accountService.registerNewUserAccount(newUser);
         }
 
-        AccountDTO account = accountService.saveAccount(customer);
+        return savedUser != null ?
+                ResponseEntity.ok().body(savedUser) :
+                ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+    }
 
-        return ResponseEntity.ok().body(account);
+    @GetMapping(path = "/account")
+    public @ResponseBody ResponseEntity<AccountDTO> userLogin(@RequestBody @Valid AccountRegistrationReq req) {
+
+        AccountDTO newUser = new AccountDTO();
+        AccountDTO savedUser;
+
+        try {
+            UserType userType = UserType.valueOf(req.usertype);
+            newUser.setName(req.name);
+            newUser.setPassword(req.password);
+            newUser.setUserType(userType);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestAlertException("invalid user type", ENTITY_NAME, "invalidUserType");
+        } finally {
+            savedUser = accountService.loginExistingUserAccount(newUser);
+        }
+
+        return savedUser != null ?
+                ResponseEntity.ok().body(savedUser) :
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+
+    @GetMapping(path = "/auth")
+    public @ResponseBody ResponseEntity<Boolean> userTokenAuthentication(@RequestBody @Valid AuthenticationReq req) {
+
+        boolean result = accountService.hasValidTokenAuthentication(req.name, req.sessionToken);
+
+        return ResponseEntity.ok().body(result);
     }
 }

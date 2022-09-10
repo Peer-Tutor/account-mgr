@@ -11,6 +11,7 @@ import org.mapstruct.Mapper;
 public interface AccountMapper extends EntityMapper<AccountDTO, Account> {
 
     Account toEntity(AccountDTO accountDTO);
+
     AccountDTO toDto(Account account);
 
     default Account fromId(Long id) {

@@ -92,9 +92,9 @@ public class AccountDTO implements Serializable {
     @Override
     public String toString() {
         return "AccountDTODTO{" +
-            "id=" + getId() +
-            ", name='" + getName() + "'" +
-            "}";
+                "id=" + getId() +
+                ", name='" + getName() + "'" +
+                "}";
     }
 
 }

@@ -18,27 +18,7 @@ import java.util.Objects;
  * fix type specific filters.
  */
 public class AccountCriteria implements Serializable, Criteria {
-    /**
-     * Class for filtering HousingType
-     */
-    public static class UserTypeFilter extends Filter<UserType> {
-
-        public UserTypeFilter() {
-        }
-
-        public UserTypeFilter(UserTypeFilter filter) {
-            super(filter);
-        }
-
-        @Override
-        public UserTypeFilter copy() {
-            return new UserTypeFilter(this);
-        }
-
-    }
-
     private LongFilter id;
-
     private UserTypeFilter userType;
 
     public AccountCriteria() {
@@ -80,15 +60,15 @@ public class AccountCriteria implements Serializable, Criteria {
         }
         final AccountCriteria that = (AccountCriteria) o;
         return
-            Objects.equals(id, that.id) &&
-            Objects.equals(userType, that.userType);
+                Objects.equals(id, that.id) &&
+                        Objects.equals(userType, that.userType);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-        id,
-        userType
+                id,
+                userType
         );
     }
 
@@ -97,7 +77,26 @@ public class AccountCriteria implements Serializable, Criteria {
         return "AccountCriteria{" +
                 (id != null ? "id=" + id + ", " : "") +
                 (userType != null ? "housingType=" + userType + ", " : "") +
-            "}";
+                "}";
+    }
+
+    /**
+     * Class for filtering HousingType
+     */
+    public static class UserTypeFilter extends Filter<UserType> {
+
+        public UserTypeFilter() {
+        }
+
+        public UserTypeFilter(UserTypeFilter filter) {
+            super(filter);
+        }
+
+        @Override
+        public UserTypeFilter copy() {
+            return new UserTypeFilter(this);
+        }
+
     }
 
 }
