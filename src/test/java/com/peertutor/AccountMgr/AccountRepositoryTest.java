@@ -6,10 +6,7 @@ import com.peertutor.AccountMgr.repository.AccountRepository;
 import com.peertutor.AccountMgr.service.dto.AccountDTO;
 import com.peertutor.AccountMgr.service.mapper.AccountMapper;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,12 +21,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class AccountMgrApplicationTests {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class AccountRepositoryTest {
 
     private static final String USER_NAME_1 = "user_1";
     private static final String USER_PASSWORD_1 = "aaaaaa";
-    private static final String USER_SESSION_TOKEN_1 = "aaaaaa";
     private static final String USER_USERTYPE_1 = "TUTOR";
+
+    private static final String USER_NAME_2 = "user_2";
+    private static final String USER_PASSWORD_2 = "bbbbb";
+    private static final String USER_USERTYPE_2 = "STUDENT";
+
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
@@ -45,11 +47,9 @@ class AccountMgrApplicationTests {
     @Test
     @Order(1)
     public void saveAccountSuccess() {
-
         AccountDTO accountDTO = AccountDTO.builder()
                 .name(USER_NAME_1)
                 .password(USER_PASSWORD_1)
-                .sessionToken(USER_SESSION_TOKEN_1)
                 .userType(UserType.valueOf(USER_USERTYPE_1))
                 .build();
         Account account = accountMapper.toEntity(accountDTO);
@@ -64,12 +64,49 @@ class AccountMgrApplicationTests {
         AccountDTO accountDTO = AccountDTO.builder()
                 .name(USER_NAME_1)
                 .password(USER_PASSWORD_1)
-                .sessionToken(USER_SESSION_TOKEN_1)
                 .userType(UserType.valueOf(USER_USERTYPE_1))
                 .build();
         Account account = accountMapper.toEntity(accountDTO);
-        Exception thrown = assertThrows(DataIntegrityViolationException.class, () -> {
+        assertThrows(DataIntegrityViolationException.class, () -> {
             accountRepository.saveAndFlush(accountMapper.toEntity(accountDTO));
         });
+    }
+
+    @Test
+    @Order(3)
+    public void updateAccountSuccess() {
+        Account account = accountRepository.findByName(USER_NAME_1);
+        account.setUserType(UserType.valueOf(USER_USERTYPE_2));
+        Account accountSaved = accountRepository.saveAndFlush(account);
+
+        Assertions.assertThat(account.equals(accountSaved));
+    }
+
+    @Test
+    @Order(4)
+    public void viewAccountSuccess() {
+        AccountDTO accountDTO = AccountDTO.builder()
+                .name(USER_NAME_2)
+                .password(USER_PASSWORD_2)
+                .userType(UserType.valueOf(USER_USERTYPE_2))
+                .build();
+        Account account = accountMapper.toEntity(accountDTO);
+
+        Account accountSaved = accountRepository.saveAndFlush(account);
+        Account accountRetrieved = accountRepository.findByName(USER_NAME_2);
+
+        Assertions.assertThat(account.equals(accountRetrieved));
+    }
+
+    @Test
+    @Order(5)
+    public void deleteAccountSuccess() {
+        Account accountRetrieved = accountRepository.findByName(USER_NAME_2);
+        accountRepository.delete(accountRetrieved);
+        accountRepository.flush();
+
+        accountRetrieved = accountRepository.findByName(USER_NAME_2);
+
+        Assertions.assertThat(accountRetrieved == null);
     }
 }
