@@ -44,7 +44,8 @@ public class AccountController {
         String url = appConfig.getStudentMgr().get("url");
         String port = appConfig.getStudentMgr().get("port");
 
-        String endpoint = url + ":" + port + "/";
+
+        String endpoint = url+ "/"; //":"+port + "/";
         System.out.println("endpoint" + endpoint);
 
         RestTemplate restTemplate = new RestTemplate();
