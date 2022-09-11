@@ -1,21 +1,21 @@
-FROM eclipse-temurin:11 as build
-WORKDIR /workspace/app
+# FROM eclipse-temurin:11 as build
+# WORKDIR /workspace/app
 
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-COPY src src
+# COPY mvnw .
+# COPY .mvn .mvn
+# COPY pom.xml .
+# COPY src src
 
-RUN ./mvnw install -DskipTests -e
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+# RUN ./mvnw install -DskipTests -e
+# RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
-FROM eclipse-temurin:11
-VOLUME /tmp
-ARG DEPENDENCY=/workspace/app/target/dependency
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java" ,"-cp","app:app/lib/*","com.peertutor.AccountMgr.AccountMgrApplication"]
+# FROM eclipse-temurin:11
+# VOLUME /tmp
+# ARG DEPENDENCY=/workspace/app/target/dependency
+# COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
+# COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
+# COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
+# ENTRYPOINT ["java" ,"-cp","app:app/lib/*","com.peertutor.AccountMgr.AccountMgrApplication"]
 
 # to use for ci cd
 # ENTRYPOINT ["java" ,"-cp","app:app/lib/*","com.peertutor.AccountMgr.AccountMgrApplication", "-Dspring.profiles.active=docker"]
@@ -23,7 +23,7 @@ ENTRYPOINT ["java" ,"-cp","app:app/lib/*","com.peertutor.AccountMgr.AccountMgrAp
 
 # Old
 # define base docker image - openjdk:11
-# FROM openjdk:11
+FROM openjdk:11
 
 # metadata
 # LABEL maintainer="nadine"
@@ -32,10 +32,10 @@ ENTRYPOINT ["java" ,"-cp","app:app/lib/*","com.peertutor.AccountMgr.AccountMgrAp
 # Any RUN, CMD, ADD, COPY, or ENTRYPOINT command will be executed in the specified working directory.
 # WORKDIR ./app
 # copy .jar to docker image
-# ADD ./target/ClassRoomSvcs-0.0.1-SNAPSHOT.jar classroomsvc.jar
+ADD ./target/AccountMgr-0.0.1-SNAPSHOT.jar accountmgr.jar
 
 # command to run when starting docker
-# ENTRYPOINT ["java","-Dspring.profiles.active=docker", "-jar", "classroomsvc.jar"]
-# ENTRYPOINT ["java", "-jar", "classroomsvc.jar"]
+ENTRYPOINT ["java","-Dspring.profiles.active=docker", "-jar", "accountmgr.jar"]
+# ENTRYPOINT ["java", "-jar", "accountmgr.jar"]
 
 
