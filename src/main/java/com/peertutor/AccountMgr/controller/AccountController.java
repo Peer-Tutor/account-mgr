@@ -28,6 +28,13 @@ public class AccountController {
     private AccountService accountService;
     private String applicationName = "AccountMgr";
 
+
+    // do not remove, for health check...
+    @GetMapping(path="/health")
+    public @ResponseBody String healthCheck(){
+        return "Ok";
+    }
+
     @GetMapping(path = "/public-api")
     public @ResponseBody String callPublicApi() {
         String endpoint = "https://api.publicapis.org/entries"; //url+":"+port;
