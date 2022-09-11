@@ -1,33 +1,34 @@
 package com.peertutor.AccountMgr.controller;
 
-import com.peertutor.AccountMgr.model.Account;
-import com.peertutor.AccountMgr.repository.AccountRepository;
+import com.peertutor.AccountMgr.controller.errors.BadRequestAlertException;
+import com.peertutor.AccountMgr.model.enumeration.UserType;
+import com.peertutor.AccountMgr.model.viewmodel.request.AccountRegistrationReq;
+import com.peertutor.AccountMgr.model.viewmodel.request.AuthenticationReq;
+import com.peertutor.AccountMgr.service.AccountService;
+import com.peertutor.AccountMgr.service.dto.AccountDTO;
 import com.peertutor.AccountMgr.util.AppConfig;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.SpringVersion;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
+import javax.validation.Valid;
 
 @Controller
-@RequestMapping(path="/account-mgr")
+@RequestMapping(path = "/account-mgr")
+@RequiredArgsConstructor
 public class AccountController {
+    private static final String ENTITY_NAME = "AccountController";
     @Autowired
     AppConfig appConfig;
     @Autowired
-    private AccountRepository accountRepository;// = new CustomerRepository();
-    @GetMapping(path="/")
-    public @ResponseBody String defaultResponse(){
+    private AccountService accountService;
+    private String applicationName = "AccountMgr";
 
-        System.out.println("appConfig="+ appConfig.toString());
-        System.out.println("ver"+ SpringVersion.getVersion());
-        return "Hello world Spring Ver = " + SpringVersion.getVersion() + "From Account mgr";
-
-    }
-    @GetMapping(path="/public-api")
+    @GetMapping(path = "/public-api")
     public @ResponseBody String callPublicApi() {
         String endpoint = "https://api.publicapis.org/entries"; //url+":"+port;
         System.out.println("endpoint" + endpoint);
@@ -38,10 +39,11 @@ public class AccountController {
         return response.toString();
     }
 
-    @GetMapping(path="/call-app-student-mgr")
+    @GetMapping(path = "/call-app-student-mgr")
     public @ResponseBody String callAppTwo() {
         String url = appConfig.getStudentMgr().get("url");
         String port = appConfig.getStudentMgr().get("port");
+
 
         String endpoint = url+ "/"; //":"+port + "/";
         System.out.println("endpoint" + endpoint);
@@ -51,36 +53,56 @@ public class AccountController {
 
         return response.toString();
     }
-    @GetMapping(path="/health")
-    public @ResponseBody String healthCheck(){
-        return "Ok";
+
+    @PostMapping(path = "/account")
+    public @ResponseBody ResponseEntity<AccountDTO> userRegistration(@RequestBody @Valid AccountRegistrationReq req) {
+
+        AccountDTO newUser = new AccountDTO();
+        AccountDTO savedUser;
+
+        try {
+            UserType userType = UserType.valueOf(req.usertype);
+            newUser.setName(req.name);
+            newUser.setPassword(req.password);
+            newUser.setUserType(userType);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestAlertException("invalid user type", ENTITY_NAME, "invalidUserType");
+        } finally {
+            savedUser = accountService.registerNewUserAccount(newUser);
+        }
+
+        return savedUser != null ?
+                ResponseEntity.ok().body(savedUser) :
+                ResponseEntity.status(HttpStatus.CONFLICT).body(null);
     }
 
-    @PostMapping(path = "/add")
-    public @ResponseBody String addNewCustomer(@RequestBody Map<String, String> customerDTO) {
+    @GetMapping(path = "/account")
+    public @ResponseBody ResponseEntity<AccountDTO> userLogin(@RequestBody @Valid AccountRegistrationReq req) {
 
-        // <validation logic here>
-        // todo: generalise validation logic
+        AccountDTO newUser = new AccountDTO();
+        AccountDTO savedUser;
 
-        // <retrieve data from request body>
-        System.out.println("customerMap= " +customerDTO);
-        String firstName = customerDTO.get("firstName");
-        String lastName = customerDTO.get("lastName");
-        // create DTO
-        Account customer = new Account(firstName, lastName);
+        try {
+            UserType userType = UserType.valueOf(req.usertype);
+            newUser.setName(req.name);
+            newUser.setPassword(req.password);
+            newUser.setUserType(userType);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestAlertException("invalid user type", ENTITY_NAME, "invalidUserType");
+        } finally {
+            savedUser = accountService.loginExistingUserAccount(newUser);
+        }
 
-        // dao layer: save object to db
-        accountRepository.save(customer);
-
-        // todo: better logging
-        // todo: generalise response message
-        return "Saved";
-    }
-    @GetMapping(path="/all")
-    public @ResponseBody Iterable<Account> getAllCustomers (){
-
-        return accountRepository.findAll();
+        return savedUser != null ?
+                ResponseEntity.ok().body(savedUser) :
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
+    @GetMapping(path = "/auth")
+    public @ResponseBody ResponseEntity<Boolean> userTokenAuthentication(@RequestBody @Valid AuthenticationReq req) {
 
+        boolean result = accountService.hasValidTokenAuthentication(req.name, req.sessionToken);
+
+        return ResponseEntity.ok().body(result);
+    }
 }

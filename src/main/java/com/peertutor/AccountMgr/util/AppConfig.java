@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Map;
 
 @Configuration
-@ConfigurationProperties(prefix="app-config")
+@ConfigurationProperties(prefix = "app-config")
 public class AppConfig {
 
     private Map<String, String> bookmarkMgr;
