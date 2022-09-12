@@ -30,8 +30,8 @@ public class AccountController {
 
 
     // do not remove, for health check...
-    @GetMapping(path="/health")
-    public @ResponseBody String healthCheck(){
+    @GetMapping(path = "/health")
+    public @ResponseBody String healthCheck() {
         return "Ok";
     }
 
@@ -52,7 +52,7 @@ public class AccountController {
         String port = appConfig.getStudentMgr().get("port");
 
 
-        String endpoint = url+ "/"; //":"+port + "/";
+        String endpoint = url + "/"; //":"+port + "/";
         System.out.println("endpoint" + endpoint);
 
         RestTemplate restTemplate = new RestTemplate();
