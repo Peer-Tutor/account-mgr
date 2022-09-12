@@ -4,6 +4,7 @@ import com.peertutor.AccountMgr.controller.errors.BadRequestAlertException;
 import com.peertutor.AccountMgr.model.enumeration.UserType;
 import com.peertutor.AccountMgr.model.viewmodel.request.AccountRegistrationReq;
 import com.peertutor.AccountMgr.model.viewmodel.request.AuthenticationReq;
+import com.peertutor.AccountMgr.model.viewmodel.response.AccountRegistrationRes;
 import com.peertutor.AccountMgr.service.AccountService;
 import com.peertutor.AccountMgr.service.dto.AccountDTO;
 import com.peertutor.AccountMgr.util.AppConfig;
@@ -62,7 +63,7 @@ public class AccountController {
     }
 
     @PostMapping(path = "/account")
-    public @ResponseBody ResponseEntity<AccountDTO> userRegistration(@RequestBody @Valid AccountRegistrationReq req) {
+    public @ResponseBody ResponseEntity<AccountRegistrationRes> userRegistration(@RequestBody @Valid AccountRegistrationReq req) {
 
         AccountDTO newUser = new AccountDTO();
         AccountDTO savedUser;
@@ -78,13 +79,18 @@ public class AccountController {
             savedUser = accountService.registerNewUserAccount(newUser);
         }
 
+        AccountRegistrationRes res = new AccountRegistrationRes();
+        res.name = savedUser.getName();
+        res.sessionToken = savedUser.getSessionToken();
+        res.usertype = savedUser.getUserType().toString();
+
         return savedUser != null ?
-                ResponseEntity.ok().body(savedUser) :
+                ResponseEntity.ok().body(res) :
                 ResponseEntity.status(HttpStatus.CONFLICT).body(null);
     }
 
     @GetMapping(path = "/account")
-    public @ResponseBody ResponseEntity<AccountDTO> userLogin(@RequestBody @Valid AccountRegistrationReq req) {
+    public @ResponseBody ResponseEntity<AccountRegistrationRes> userLogin(@RequestBody @Valid AccountRegistrationReq req) {
 
         AccountDTO newUser = new AccountDTO();
         AccountDTO savedUser;
@@ -100,8 +106,13 @@ public class AccountController {
             savedUser = accountService.loginExistingUserAccount(newUser);
         }
 
+        AccountRegistrationRes res = new AccountRegistrationRes();
+        res.name = savedUser.getName();
+        res.sessionToken = savedUser.getSessionToken();
+        res.usertype = savedUser.getUserType().toString();
+
         return savedUser != null ?
-                ResponseEntity.ok().body(savedUser) :
+                ResponseEntity.ok().body(res) :
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
