@@ -120,7 +120,7 @@ public class AccountController {
         return ResponseEntity.ok().body(res);
     }
 
-    @GetMapping(path = "/auth")
+    @PostMapping(path = "/auth")
     public @ResponseBody ResponseEntity<Boolean> userTokenAuthentication(@RequestBody @Valid AuthenticationReq req) {
 
         boolean result = accountService.hasValidTokenAuthentication(req.name, req.sessionToken);
