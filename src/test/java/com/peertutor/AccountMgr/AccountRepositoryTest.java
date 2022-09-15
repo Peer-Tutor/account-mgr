@@ -61,20 +61,40 @@ class AccountRepositoryTest {
     @Test
     @Order(2)
     public void saveDuplicateAccountFail() {
+        List<Account> accountsSaved = accountRepository.findByNameIn(new ArrayList<String>(Arrays.asList(USER_NAME_1)));
+        accountsSaved.stream().forEach((account) -> accountRepository.delete(account));
+        accountRepository.flush();
+
         AccountDTO accountDTO = AccountDTO.builder()
                 .name(USER_NAME_1)
                 .password(USER_PASSWORD_1)
                 .userType(UserType.valueOf(USER_USERTYPE_1))
                 .build();
+
         Account account = accountMapper.toEntity(accountDTO);
+        Account accountSaved = accountRepository.saveAndFlush(account);
+
+        AccountDTO accountDTO2 = AccountDTO.builder()
+                .name(USER_NAME_1)
+                .password(USER_PASSWORD_1)
+                .userType(UserType.valueOf(USER_USERTYPE_1))
+                .build();
         assertThrows(DataIntegrityViolationException.class, () -> {
-            accountRepository.saveAndFlush(accountMapper.toEntity(accountDTO));
+            accountRepository.saveAndFlush(accountMapper.toEntity(accountDTO2));
         });
     }
 
     @Test
     @Order(3)
     public void updateAccountSuccess() {
+        AccountDTO accountDTO = AccountDTO.builder()
+                .name(USER_NAME_1)
+                .password(USER_PASSWORD_1)
+                .userType(UserType.valueOf(USER_USERTYPE_1))
+                .build();
+
+        accountRepository.saveAndFlush(accountMapper.toEntity(accountDTO));
+
         Account account = accountRepository.findByName(USER_NAME_1);
         account.setUserType(UserType.valueOf(USER_USERTYPE_2));
         Account accountSaved = accountRepository.saveAndFlush(account);
@@ -101,6 +121,14 @@ class AccountRepositoryTest {
     @Test
     @Order(5)
     public void deleteAccountSuccess() {
+        AccountDTO accountDTO = AccountDTO.builder()
+                .name(USER_NAME_2)
+                .password(USER_PASSWORD_2)
+                .userType(UserType.valueOf(USER_USERTYPE_2))
+                .build();
+        Account account = accountMapper.toEntity(accountDTO);
+
+        Account accountSaved = accountRepository.saveAndFlush(account);
         Account accountRetrieved = accountRepository.findByName(USER_NAME_2);
         accountRepository.delete(accountRetrieved);
         accountRepository.flush();
