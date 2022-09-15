@@ -79,14 +79,16 @@ public class AccountController {
             savedUser = accountService.registerNewUserAccount(newUser);
         }
 
+        if (savedUser == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+
         AccountRegistrationRes res = new AccountRegistrationRes();
         res.name = savedUser.getName();
         res.sessionToken = savedUser.getSessionToken();
         res.usertype = savedUser.getUserType().toString();
 
-        return savedUser != null ?
-                ResponseEntity.ok().body(res) :
-                ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        return ResponseEntity.ok().body(res);
     }
 
     @GetMapping(path = "/account")
@@ -106,14 +108,16 @@ public class AccountController {
             savedUser = accountService.loginExistingUserAccount(newUser);
         }
 
+        if (savedUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
         AccountRegistrationRes res = new AccountRegistrationRes();
         res.name = savedUser.getName();
         res.sessionToken = savedUser.getSessionToken();
         res.usertype = savedUser.getUserType().toString();
 
-        return savedUser != null ?
-                ResponseEntity.ok().body(res) :
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        return ResponseEntity.ok().body(res);
     }
 
     @GetMapping(path = "/auth")
