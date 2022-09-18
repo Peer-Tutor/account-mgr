@@ -11,7 +11,7 @@ phases:
       # Replace with your application name
       - APPLICATION_NAME=account-mgr
       # Replace with this 435320931996.dkr.ecr.ap-south-1.amazonaws.com to your repository URI
-      - REPOSITORY_URI=416519539882.dkr.ecr.ap-southeast-1.amazonaws.com/account-mgr/$APPLICATION_NAME
+      - REPOSITORY_URI=416519539882.dkr.ecr.ap-southeast-1.amazonaws.com/$APPLICATION_NAME
   build:
     commands:
       - echo Build started on `date`
