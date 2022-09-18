@@ -22,7 +22,7 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo pushing to repo
-      - docker push $REPOSITORY_URI:latest #$IMAGE_TAG
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Writing image definitions file...
       # Give your container name
       - printf '[{"name":"AccountMgr", "imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
