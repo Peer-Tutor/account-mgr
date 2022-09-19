@@ -7,7 +7,7 @@ phases:
       - $(aws ecr get-login --no-include-email --region ap-southeast-1)
       # Get commit hash value to tag the image
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_TAG=latest #${COMMIT_HASH:=latest}
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
       # Replace with your application name
       - APPLICATION_NAME=account-mgr
       # Replace with this 435320931996.dkr.ecr.ap-south-1.amazonaws.com to your repository URI
@@ -26,6 +26,8 @@ phases:
       - echo Writing image definitions file...
       # Give your container name
       - printf '[{"name":"AccountMgr", "imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      # redeploy ecs
+      - aws ecs update-service --cluster peerTutor-cluster --service service-$APPLICATION_NAME --force-new-deployment --region ap-southeast-1
 artifacts:
   files:
     - imagedefinitions.json
