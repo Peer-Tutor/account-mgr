@@ -33,7 +33,7 @@ public class AccountController {
     // do not remove, for health check...
     @GetMapping(path = "/health")
     public @ResponseBody String healthCheck() {
-        return "Ok 3";
+        return "Ok 4";
     }
 
     @GetMapping(path = "/public-api")
