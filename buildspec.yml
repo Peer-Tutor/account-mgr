@@ -26,10 +26,10 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Writing image definitions file...
       # Give your container name
-      - printf '[{"name":"AccountMgr", "imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"account-mgr", "imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       # redeploy ecs
 #      - aws ecr get-login-password --region ap-southeast-1 | aws ecs update-service --cluster peerTutor-cluster --service service-account-mgr --force-new-deployment --region ap-southeast-1
-      - aws ecs update-service --cluster peerTutor-cluster --service service-account-mgr --force-new-deployment --region ap-southeast-1
+#      - aws ecs update-service --cluster peerTutor-cluster --service service-account-mgr --force-new-deployment --region ap-southeast-1
       - echo ran redeploy command
 artifacts:
   files:
