@@ -28,6 +28,7 @@ phases:
       - printf '[{"name":"AccountMgr", "imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       # redeploy ecs
       - aws ecs update-service --cluster peerTutor-cluster --service service-account-mgr --force-new-deployment --region ap-southeast-1
+      - echo ran redeploy command
 artifacts:
   files:
     - imagedefinitions.json
