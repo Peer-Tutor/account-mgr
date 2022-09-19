@@ -4,7 +4,8 @@ phases:
     commands:
       - echo Logging in to Amazon ECR....
       - aws --version
-      - $(aws ecr get-login --no-include-email --region ap-southeast-1)
+      #$(aws ecr get-login --no-include-email --region ap-southeast-1)
+      - aws ecr get-login-password --region ap-southeast-1
       # Get commit hash value to tag the image
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
@@ -27,7 +28,7 @@ phases:
       # Give your container name
       - printf '[{"name":"AccountMgr", "imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       # redeploy ecs
-      - aws ecs update-service --cluster peerTutor-cluster --service service-account-mgr --force-new-deployment --region ap-southeast-1
+      - aws ecr get-login-password --region ap-southeast-1 | aws ecs update-service --cluster peerTutor-cluster --service service-account-mgr --force-new-deployment --region ap-southeast-1
       - echo ran redeploy command
 artifacts:
   files:
