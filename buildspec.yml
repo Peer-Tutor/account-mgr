@@ -2,7 +2,7 @@ version: 0.2
 env:
 #  parameter-store:
 #    SPRING_PROFILE_ACTIVE: "/dev/app/profile"
-  variable:
+  variables:
     SPRING_PROFILE_ACTIVE: "aws"
 phases:
   pre_build:
