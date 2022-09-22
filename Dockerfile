@@ -13,8 +13,8 @@ COPY pom.xml .
 COPY src src
 
 RUN echo SPRING_PROFILE = $SPRING_PROFILE
-RUN echo DB_URL = DB_URL
-RUN echo DB_PORT = DB_PORT
+RUN echo DB_URL = $DB_URL
+RUN echo DB_PORT = $DB_PORT
 
 # RUN ./mvnw install -DskipTests -e
 
