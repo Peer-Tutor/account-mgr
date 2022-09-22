@@ -7,7 +7,7 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN ECHO SPRING_PROFILE=${SPRING_PROFILE}
+RUN ["echo", "SPRING_PROFILE = ${SPRING_PROFILE}"]
 # RUN ./mvnw test -Dspring.profiles.active=${SPRING_PROFILE}
 
 # RUN ./mvnw install -DskipTests -e
