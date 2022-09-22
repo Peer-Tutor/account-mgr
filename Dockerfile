@@ -7,9 +7,11 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN ./mvnw test -Dspring.profiles.active=${SPRING_PROFILE}
+RUN ECHO SPRING_PROFILE=${SPRING_PROFILE}
+# RUN ./mvnw test -Dspring.profiles.active=${SPRING_PROFILE}
 
-RUN ./mvnw install -DskipTests -e
+# RUN ./mvnw install -DskipTests -e
+RUN ./mvnw install -Dspring.profiles.active=${SPRING_PROFILE} -e
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM eclipse-temurin:11
