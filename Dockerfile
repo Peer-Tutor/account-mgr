@@ -1,12 +1,14 @@
 FROM eclipse-temurin:11 as build
 WORKDIR /workspace/app
 
+ENV springProfile=aws
+
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN ./mvnw install -e
+RUN ./mvnw install -Dspring.profiles.active=${profile} -e
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM eclipse-temurin:11
