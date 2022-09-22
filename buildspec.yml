@@ -1,9 +1,9 @@
 version: 0.2
 env:
   parameter-store:
-    - DB_URL: "/dev/RDS/port"
-    - DB_PORT: "/dev/RDS/port"
-    - SPRING_PROFILE_ACTIVE: "/dev/app/profile"
+    DB_URL: "/dev/RDS/port"
+    DB_PORT: "/dev/RDS/port"
+    SPRING_PROFILE_ACTIVE: "/dev/app/profile"
 #  variables:
 #    SPRING_PROFILE_ACTIVE: "aws"
 phases:
