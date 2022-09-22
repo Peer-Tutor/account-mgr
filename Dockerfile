@@ -1,14 +1,20 @@
 FROM eclipse-temurin:11 as build
 WORKDIR /workspace/app
 ARG SPRING_PROFILE
+ARG DB_URL
+ARG DB_PORT
+
+ENV=$DB_URL
+ENV=$DB_PORT
 
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN ["echo", "SPRING_PROFILE = $SPRING_PROFILE"]
 RUN echo SPRING_PROFILE = $SPRING_PROFILE
+RUN echo DB_URL = DB_URL
+RUN echo DB_PORT = DB_PORT
 
 # RUN ./mvnw install -DskipTests -e
 
