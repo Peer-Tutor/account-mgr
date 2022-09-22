@@ -4,8 +4,10 @@ env:
     DB_URL: "/dev/RDS/port"
     DB_PORT: "/dev/RDS/port"
     SPRING_PROFILE_ACTIVE: "/dev/app/profile"
-#  variables:
-#    SPRING_PROFILE_ACTIVE: "aws"
+    MYSQLDB_DATABASE: "/dev/RDS/dbName"
+    MYSQLDB_ROOT_PASSWORD: "/dev/RDS/password"
+    MYSQLDB_USER": "/dev/RDS/user"
+
 phases:
   pre_build:
     commands:
@@ -24,8 +26,8 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - echo in buildspec, SPRING_PROFILE_ACTIVE = $SPRING_PROFILE_ACTIVE, $DB_PORT = $DB_PORT, DB_URL = $DB_URL
-      - docker build --build-arg SPRING_PROFILE=$SPRING_PROFILE_ACTIVE --build-arg DB_PORT=$DB_PORT --build-arg DB_URL=$DB_URL -t $APPLICATION_NAME:$IMAGE_TAG .
+      - echo in buildspec, SPRING_PROFILE_ACTIVE = $SPRING_PROFILE_ACTIVE, $DB_PORT = $DB_PORT, DB_URL = $DB_URL, MYSQLDB_DATABASE=$MYSQLDB_DATABASE, MYSQLDB_USER=$MYSQLDB_USER, MYSQLDB_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - docker build --build-arg SPRING_PROFILE=$SPRING_PROFILE_ACTIVE --build-arg DB_PORT=$DB_PORT --build-arg DB_URL=$DB_URL --build-arg MYSQLDB_DATABASE=$MYSQLDB_DATABASE --build-arg MYSQLDB_USER=$MYSQLDB_USER --build-arg MYSQLDB_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD -t $APPLICATION_NAME:$IMAGE_TAG .
       - docker tag $APPLICATION_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
