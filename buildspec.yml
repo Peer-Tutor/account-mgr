@@ -24,8 +24,8 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - echo in buildspec, SPRING_PROFILE_ACTIVE = $SPRING_PROFILE_ACTIVE
-      - docker build --build-arg SPRING_PROFILE=$SPRING_PROFILE_ACTIVE --build-arg DB_PORT=DB_PORT --build-arg DB_URL=DB_URL -t $APPLICATION_NAME:$IMAGE_TAG .
+      - echo in buildspec, SPRING_PROFILE_ACTIVE = $SPRING_PROFILE_ACTIVE, $DB_PORT = $DB_PORT, DB_URL = $DB_URL
+      - docker build --build-arg SPRING_PROFILE=$SPRING_PROFILE_ACTIVE --build-arg DB_PORT=$DB_PORT --build-arg DB_URL=$DB_URL -t $APPLICATION_NAME:$IMAGE_TAG .
       - docker tag $APPLICATION_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
