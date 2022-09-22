@@ -1,4 +1,7 @@
 version: 0.2
+env:
+  parameter-store:
+    SPRING_PROFILE_ACTIVE: "/dev/app/profile"
 phases:
   pre_build:
     commands:
@@ -17,7 +20,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $APPLICATION_NAME:$IMAGE_TAG .
+      - docker build --build-arg springProfile=${SPRING_PROFILE_ACTIVE} -t $APPLICATION_NAME:$IMAGE_TAG .
       - docker tag $APPLICATION_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
