@@ -30,10 +30,9 @@ RUN echo DB_PORT = $DB_PORT
 
 RUN ./mvnw install \
     -Dspring.profiles.active=$SPRING_PROFILE \
-    --DB_URL=$DB_URL\
-    --DB_PORT=$DB_PORT \
-    --JWT_SECRET=$JWT_SECRET \
-    --JWT_EXPIRY_DURATION=$JWT_EXPIRY_DURATION \
+    --spring.datasource.url=jdbc:mysql://$DB_URL:$DB_PORT/$MYSQLDB_DATABASE \
+    --app-config.jwtSecret=$JWT_SECRET \
+    --app-config.jwtExpirationMs=$JWT_EXPIRY_DURATION \
     -e
 
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
