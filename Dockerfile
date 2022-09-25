@@ -1,12 +1,40 @@
 FROM eclipse-temurin:11 as build
 WORKDIR /workspace/app
+ARG SPRING_PROFILE
+ARG DB_URL
+ARG DB_PORT
+ARG MYSQLDB_DATABASE
+ARG MYSQLDB_USER
+ARG MYSQLDB_ROOT_PASSWORD
+
+# only for account mgr
+ARG JWT_SECRET
+ARG JWT_EXPIRY_DURATION
+
+#ENV DB_URL=$DB_URL
+#ENV DB_PORT=$DB_PORT
+#ENV MYSQLDB_DATABASE=$MYSQLDB_DATABASE
+#ENV MYSQLDB_USER=$MYSQLDB_USER
+#ENV MYSQLDB_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
 
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN ./mvnw install -DskipTests -e
+RUN echo SPRING_PROFILE = $SPRING_PROFILE
+RUN echo DB_URL = $DB_URL
+RUN echo DB_PORT = $DB_PORT
+
+# RUN ./mvnw install -DskipTests -e
+
+RUN ./mvnw install \
+    -Dspring.profiles.active=$SPRING_PROFILE \
+    -Dspring.datasource.url=jdbc:mysql://$DB_URL:$DB_PORT/$MYSQLDB_DATABASE \
+    -Dapp-config.jwtSecret=$JWT_SECRET \
+    -Dapp-config.jwtExpirationMs=$JWT_EXPIRY_DURATION \
+    -e
+
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM eclipse-temurin:11
