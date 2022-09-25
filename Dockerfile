@@ -26,14 +26,14 @@ RUN echo SPRING_PROFILE = $SPRING_PROFILE
 RUN echo DB_URL = $DB_URL
 RUN echo DB_PORT = $DB_PORT
 
-# RUN ./mvnw install -DskipTests -e
-
-RUN ./mvnw install \
-    -Dspring.profiles.active=$SPRING_PROFILE \
-    -Dspring.datasource.url=jdbc:mysql://$DB_URL:$DB_PORT/$MYSQLDB_DATABASE \
-    -Dapp-config.jwtSecret=$JWT_SECRET \
-    -Dapp-config.jwtExpirationMs=$JWT_EXPIRY_DURATION \
-    -e
+ RUN ./mvnw install -DskipTests -e
+#
+#RUN ./mvnw install \
+#    -Dspring.profiles.active=$SPRING_PROFILE \
+#    -Dspring.datasource.url=jdbc:mysql://$DB_URL:$DB_PORT/$MYSQLDB_DATABASE \
+#    -Dapp-config.jwtSecret=$JWT_SECRET \
+#    -Dapp-config.jwtExpirationMs=$JWT_EXPIRY_DURATION \
+#    -e
 
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
