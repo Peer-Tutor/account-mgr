@@ -21,7 +21,7 @@ phases:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
       # Replace with your application name
-      - APPLICATION_NAME=bookmark-mgr
+      - APPLICATION_NAME=account-mgr
       # Replace with this 435320931996.dkr.ecr.ap-south-1.amazonaws.com to your repository URI
       - REPOSITORY_URI=416519539882.dkr.ecr.ap-southeast-1.amazonaws.com/$APPLICATION_NAME
   build:
@@ -39,7 +39,7 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Writing image definitions file...
       # Give your container name
-      - printf '[{"name":"container-bookmark-mgr", "imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"container-account-mgr", "imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       # redeploy ecs
       #      - aws ecr get-login-password --region ap-southeast-1 | aws ecs update-service --cluster peerTutor-cluster --service service-account-mgr --force-new-deployment --region ap-southeast-1
       #      - aws ecs update-service --cluster peerTutor-cluster --service service-account-mgr --force-new-deployment --region ap-southeast-1
