@@ -29,42 +29,13 @@ public class AccountController {
     private AccountService accountService;
     private String applicationName = "AccountMgr";
 
-
-    // do not remove, for health check...
     @GetMapping(path = "/health")
     public @ResponseBody String healthCheck() {
         return "Ok";
     }
 
-    @GetMapping(path = "/public-api")
-    public @ResponseBody String callPublicApi() {
-        String endpoint = "https://api.publicapis.org/entries"; //url+":"+port;
-        System.out.println("endpoint" + endpoint);
-
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(endpoint, String.class);
-
-        return response.toString();
-    }
-
-    @GetMapping(path = "/call-app-student-mgr")
-    public @ResponseBody String callAppTwo() {
-        String url = appConfig.getStudentMgr().get("url");
-        String port = appConfig.getStudentMgr().get("port");
-
-
-        String endpoint = url + "/"; //":"+port + "/";
-        System.out.println("endpoint" + endpoint);
-
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(endpoint, String.class);
-
-        return response.toString();
-    }
-
     @PostMapping(path = "/account")
     public @ResponseBody ResponseEntity<AccountRegistrationRes> userRegistration(@RequestBody @Valid AccountRegistrationReq req) {
-
         AccountDTO newUser = new AccountDTO();
         AccountDTO savedUser;
 
@@ -92,21 +63,16 @@ public class AccountController {
     }
 
     @GetMapping(path = "/account")
-    public @ResponseBody ResponseEntity<AccountRegistrationRes> userLogin(@RequestBody @Valid AccountRegistrationReq req) {
-
+    public @ResponseBody ResponseEntity<AccountRegistrationRes> userLogin(
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "password") String password
+    ) {
         AccountDTO newUser = new AccountDTO();
         AccountDTO savedUser;
 
-        try {
-            UserType userType = UserType.valueOf(req.usertype);
-            newUser.setName(req.name);
-            newUser.setPassword(req.password);
-            newUser.setUserType(userType);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestAlertException("invalid user type", ENTITY_NAME, "invalidUserType");
-        } finally {
-            savedUser = accountService.loginExistingUserAccount(newUser);
-        }
+        newUser.setName(name);
+        newUser.setPassword(password);
+        savedUser = accountService.loginExistingUserAccount(newUser);
 
         if (savedUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
