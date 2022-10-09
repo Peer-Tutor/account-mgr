@@ -56,11 +56,14 @@ public class AccountService {
         Account existingAccount = accountRepository.findByName(account.getName());
 
         AccountDTO result = null;
+        if (existingAccount == null) {
+            return null;
+        }
 
-        if (BCrypt.checkpw(accountDTO.getPassword(), existingAccount.getPassword())
-                && account.getUserType().equals(existingAccount.getUserType())) {
+        if (BCrypt.checkpw(accountDTO.getPassword(), existingAccount.getPassword())) {
             result = accountMapper.toDto(account);
             result.setSessionToken(JWTUtils.generateJwtToken(result));
+            result.setUserType(existingAccount.getUserType());
         }
 
         return result;
