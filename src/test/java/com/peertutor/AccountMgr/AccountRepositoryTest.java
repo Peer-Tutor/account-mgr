@@ -54,9 +54,9 @@ class AccountRepositoryTest {
                 .build();
         Account account = accountMapper.toEntity(accountDTO);
         Account accountSaved = accountRepository.saveAndFlush(account);
+        Assertions.fail("Fail test case");
 
-        Assertions.assertThat(account.equals("bobob"));
-        Assertions.assertThat(account.equals(accountSaved));
+//        Assertions.assertThat(account.equals(accountSaved));
     }
 
     @Test
