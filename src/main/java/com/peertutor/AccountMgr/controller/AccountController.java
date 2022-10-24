@@ -31,7 +31,7 @@ public class AccountController {
 
     @GetMapping(path = "/health")
     public @ResponseBody String healthCheck() {
-        return "Ok 4 again";
+        return "Ok 5 again";
     }
 
     @PostMapping(path = "/account")
